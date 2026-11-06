@@ -1,0 +1,1153 @@
+[
+  {
+    "name": "detect_platform",
+    "description": "Read platform, runtime executables, user directories and WSL/native distinction. Does not install or execute discovered MCPs.",
+    "inputSchema": {
+      "properties": {},
+      "title": "detect_platformArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "detect_platformDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "discover_mcp",
+    "description": "Start bounded static discovery. Reads client configuration and source metadata; never executes candidates. Poll get_manager_task. Deep scans require a separate locally approved plan.",
+    "inputSchema": {
+      "properties": {
+        "roots": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roots"
+        },
+        "mode": {
+          "default": "quick",
+          "enum": [
+            "quick",
+            "standard"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "max_depth": {
+          "default": 4,
+          "maximum": 32,
+          "minimum": 0,
+          "title": "Max Depth",
+          "type": "integer"
+        }
+      },
+      "title": "discover_mcpArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "discover_mcpDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "list_installed_mcp",
+    "description": "List registered configurations, installation ownership and separate validation facts. Registration is not evidence of a working industrial software connection.",
+    "inputSchema": {
+      "properties": {},
+      "title": "list_installed_mcpArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "list_installed_mcpDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_mcp_info",
+    "description": "Read one local registry entry and its provenance, clients and validation evidence.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_id"
+      ],
+      "title": "get_mcp_infoArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "get_mcp_infoDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "list_mcp_tools",
+    "description": "Read paginated cached tool schemas from an actual previous handshake; does not launch a server.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        },
+        "limit": {
+          "default": 50,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "server_id"
+      ],
+      "title": "list_mcp_toolsArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "list_mcp_toolsDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_mcp_status",
+    "description": "Read owned connection status and last verification separately; external PIDs are never taken over.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_id"
+      ],
+      "title": "get_mcp_statusArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "get_mcp_statusDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_mcp_logs",
+    "description": "Read bounded redacted Manager audit/task logs and optional owned connection log.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Server Id"
+        }
+      },
+      "title": "get_mcp_logsArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "get_mcp_logsDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "search_mcp_registry",
+    "description": "Search official Registry JSON API with cache. Registry publishing is not a security certification; search requires >=3 characters.",
+    "inputSchema": {
+      "properties": {
+        "query": {
+          "title": "Query",
+          "type": "string"
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cursor"
+        },
+        "offline": {
+          "default": false,
+          "title": "Offline",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "title": "search_mcp_registryArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "search_mcp_registryDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_mcp_install_options",
+    "description": "Read Registry package/remote metadata or supported installer options; never executes packages.",
+    "inputSchema": {
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "version": {
+          "default": "latest",
+          "title": "Version",
+          "type": "string"
+        },
+        "offline": {
+          "default": false,
+          "title": "Offline",
+          "type": "boolean"
+        }
+      },
+      "title": "get_mcp_install_optionsArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "get_mcp_install_optionsDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "register_mcp",
+    "description": "Register a strict launch configuration without executing it. Credential values should be environment/keyring references.",
+    "inputSchema": {
+      "properties": {
+        "spec": {
+          "additionalProperties": true,
+          "title": "Spec",
+          "type": "object"
+        }
+      },
+      "required": [
+        "spec"
+      ],
+      "title": "register_mcpArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "register_mcpDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "install_mcp",
+    "description": "Generate a source/version/command/path installation plan. Does not install until independently approved locally and executed.",
+    "inputSchema": {
+      "properties": {
+        "request": {
+          "additionalProperties": true,
+          "title": "Request",
+          "type": "object"
+        }
+      },
+      "required": [
+        "request"
+      ],
+      "title": "install_mcpArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "install_mcpDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "configure_mcp_client",
+    "description": "Generate an atomic, hash-bound target-only client configuration plan. Original configuration is not written before local approval.",
+    "inputSchema": {
+      "properties": {
+        "client": {
+          "enum": [
+            "codex",
+            "dsh"
+          ],
+          "title": "Client",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "server_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Server Id"
+        },
+        "remove": {
+          "default": false,
+          "title": "Remove",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "client",
+        "path",
+        "name"
+      ],
+      "title": "configure_mcp_clientArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "configure_mcp_clientDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "test_mcp_connection",
+    "description": "Plan a real SDK connection/handshake/tool discovery and optional explicitly selected tool call. Starting unknown code requires local approval.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        },
+        "tool_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tool Name"
+        },
+        "arguments": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Arguments"
+        }
+      },
+      "required": [
+        "server_id"
+      ],
+      "title": "test_mcp_connectionArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "test_mcp_connectionDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "enable_mcp",
+    "description": "Plan enabling the Manager entry; client settings require their own target-only configuration plan.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_id"
+      ],
+      "title": "enable_mcpArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "enable_mcpDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "disable_mcp",
+    "description": "Plan disabling the Manager entry. Does not silently rewrite all client configurations.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_id"
+      ],
+      "title": "disable_mcpArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "disable_mcpDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "control_mcp",
+    "description": "Plan an owned connection lifecycle action. stdio is normally client-owned on demand; external processes are not forcefully adopted.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "start",
+            "stop",
+            "restart",
+            "unmanage"
+          ],
+          "title": "Action",
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_id",
+        "action"
+      ],
+      "title": "control_mcpArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "control_mcpDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "check_mcp_updates",
+    "description": "Read package version metadata; no automatic update or server execution.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_id"
+      ],
+      "title": "check_mcp_updatesArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "check_mcp_updatesDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "update_mcp",
+    "description": "Plan a version-pinned isolated replacement, retaining previous managed deployments for rollback.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        },
+        "request": {
+          "additionalProperties": true,
+          "title": "Request",
+          "type": "object"
+        }
+      },
+      "required": [
+        "server_id",
+        "request"
+      ],
+      "title": "update_mcpArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "update_mcpDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "rollback_mcp",
+    "description": "Plan returning a managed deployment to a recorded previous version.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_id"
+      ],
+      "title": "rollback_mcpArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "rollback_mcpDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "uninstall_mcp",
+    "description": "Plan deletion only of Manager-owned deployments. External projects are merely unmanaged.",
+    "inputSchema": {
+      "properties": {
+        "server_id": {
+          "title": "Server Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "server_id"
+      ],
+      "title": "uninstall_mcpArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "uninstall_mcpDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "execute_approved_plan",
+    "description": "Execute a single-use locally approved plan only under approved_only Agent policy. This tool cannot approve plans.",
+    "inputSchema": {
+      "properties": {
+        "plan_id": {
+          "title": "Plan Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id"
+      ],
+      "title": "execute_approved_planArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "execute_approved_planDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "get_manager_task",
+    "description": "Read an asynchronous Manager task and its actual completion/error state.",
+    "inputSchema": {
+      "properties": {
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id"
+      ],
+      "title": "get_manager_taskArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "get_manager_taskDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "list_manager_tasks",
+    "description": "Read recent persisted installation, scan and validation tasks.",
+    "inputSchema": {
+      "properties": {},
+      "title": "list_manager_tasksArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "list_manager_tasksDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "control_scan",
+    "description": "Pause, resume or cancel a bounded directory scan. Other operations do not pretend to support interrupt-safe cancellation.",
+    "inputSchema": {
+      "properties": {
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "pause",
+            "resume",
+            "cancel"
+          ],
+          "title": "Action",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "action"
+      ],
+      "title": "control_scanArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "control_scanDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "create_extension_workspace",
+    "description": "Create a private draft directory for Agent-authored source; does not execute it.",
+    "inputSchema": {
+      "properties": {
+        "target_server_id": {
+          "title": "Target Server Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_server_id"
+      ],
+      "title": "create_extension_workspaceArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "create_extension_workspaceDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "submit_extension",
+    "description": "Snapshot declared source, schemas, dependencies, permissions and tests with content hashes.",
+    "inputSchema": {
+      "properties": {
+        "workspace_id": {
+          "title": "Workspace Id",
+          "type": "string"
+        },
+        "manifest": {
+          "additionalProperties": true,
+          "title": "Manifest",
+          "type": "object"
+        }
+      },
+      "required": [
+        "workspace_id",
+        "manifest"
+      ],
+      "title": "submit_extensionArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "submit_extensionDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "validate_extension",
+    "description": "Perform syntax/schema/dependency/conflict checks; AST danger hints are not a sandbox or security certificate.",
+    "inputSchema": {
+      "properties": {
+        "extension_id": {
+          "title": "Extension Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "extension_id"
+      ],
+      "title": "validate_extensionArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "validate_extensionDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "test_extension",
+    "description": "Plan an OS-isolated extension test. Missing sandbox/native adapter produces blocked/not_run, never a simulated pass.",
+    "inputSchema": {
+      "properties": {
+        "extension_id": {
+          "title": "Extension Id",
+          "type": "string"
+        },
+        "level": {
+          "default": "host",
+          "enum": [
+            "host",
+            "native",
+            "e2e"
+          ],
+          "title": "Level",
+          "type": "string"
+        }
+      },
+      "required": [
+        "extension_id"
+      ],
+      "title": "test_extensionArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "test_extensionDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "install_extension",
+    "description": "Plan publication only after required tests match the exact source; installation requires local approval and restart.",
+    "inputSchema": {
+      "properties": {
+        "extension_id": {
+          "title": "Extension Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "extension_id"
+      ],
+      "title": "install_extensionArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "install_extensionDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "enable_extension",
+    "description": "Plan enabling a previously tested and installed extension; restart/reconnect required.",
+    "inputSchema": {
+      "properties": {
+        "extension_id": {
+          "title": "Extension Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "extension_id"
+      ],
+      "title": "enable_extensionArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "enable_extensionDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "disable_extension",
+    "description": "Plan removing an extension from startup discovery; does not inject code into live sessions.",
+    "inputSchema": {
+      "properties": {
+        "extension_id": {
+          "title": "Extension Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "extension_id"
+      ],
+      "title": "disable_extensionArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "disable_extensionDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "rollback_extension",
+    "description": "Plan restoring a specific retained, tested extension snapshot and restart discovery.",
+    "inputSchema": {
+      "properties": {
+        "extension_id": {
+          "title": "Extension Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "extension_id"
+      ],
+      "title": "rollback_extensionArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "rollback_extensionDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "list_extensions",
+    "description": "Read submitted/validated/tested/installed extension states and evidence.",
+    "inputSchema": {
+      "properties": {},
+      "title": "list_extensionsArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "list_extensionsDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "export_mcp_configuration",
+    "description": "Export portable nonsecret templates, omitting private absolute paths and engineering data.",
+    "inputSchema": {
+      "properties": {},
+      "title": "export_mcp_configurationArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "export_mcp_configurationDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "inspect_migration",
+    "description": "Validate an import and locate existing packages; never install or overwrite configuration automatically.",
+    "inputSchema": {
+      "properties": {
+        "bundle": {
+          "additionalProperties": true,
+          "title": "Bundle",
+          "type": "object"
+        }
+      },
+      "required": [
+        "bundle"
+      ],
+      "title": "inspect_migrationArguments",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "title": "inspect_migrationDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    }
+  }
+]

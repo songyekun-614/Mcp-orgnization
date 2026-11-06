@@ -1,0 +1,8 @@
+include README.md
+recursive-include docs *.md *.json *.txt
+recursive-include scripts *.py *.sh *.ps1
+recursive-include examples *.py *.json
+recursive-include tests *.py
+include .github/workflows/tests.yml
+prune runtime
+prune build
