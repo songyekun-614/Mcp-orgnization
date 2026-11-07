@@ -102,6 +102,9 @@ class ManagerCore:
             after_sha256=hashlib.sha256(candidate['after_text'].encode()).hexdigest(),
             preview={'target':name,'operation':'remove' if remove else 'add_or_update','configuration':safe_spec(spec) if spec else None})
         return self.approvals.create('configure_client',payload)
+    def plan_gateway(self,server_ids,**kwargs):
+        from .gateway import plan_gateway
+        return plan_gateway(self,server_ids,**kwargs)
     def approve_plan(self,plan_id):return self.approvals.approve_local(plan_id)
     def execute_plan(self,plan_id):
         record=self.db.get_record('plans',plan_id);action=record['action'];plan=self.approvals.consume(plan_id,action);p=plan['payload']
@@ -129,6 +132,9 @@ class ManagerCore:
                 path=Path(p['path'])
                 if hashlib.sha256(path.read_bytes()).hexdigest()!=p['sha256']:raise ValueError('Database backup changed after approval')
                 self.db.backup(self.data_dir/('before-restore-'+uuid4().hex+'.sqlite'));result=self.db.restore_from(path)
+            elif action=='configure_gateway':
+                from .gateway import apply_gateway
+                result=apply_gateway(self,p)
             elif action=='install':result=self.installer.execute(p)
             elif action=='server_action':result=self._server_action(p)
             elif action=='test_extension':result=self.extensions.execute_test(p)

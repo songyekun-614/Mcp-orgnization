@@ -130,3 +130,17 @@ Python 独立 venv、Node 独立 prefix 不影响其他 MCP；它们不被称为
 6. P1：系统签名发行包、第二版数据库迁移、跨电脑 Windows/Linux 实机迁移、更多更新源及失败恢复场景。
 
 Agent 负责代码和工程决策，Manager 负责管理与生命周期，普通 MCP 执行软件操作，工业软件负责真实计算。没有在 Manager 中引入大模型或工程规划引擎。
+
+## 十一、2026-11-07 轻量代理实际交付
+
+针对小上下文本地模型工具定义开销，新增独立三工具代理，不移除原管理型35工具接口。完成代码、测试及本机 DSH 部署，不改写 AbaqusMCP。
+
+新增 `gateway_server.py`、`core/gateway.py`、`core/gateway_connection.py`、`tests/test_gateway.py`、`LIGHTWEIGHT_GATEWAY.md`；修改 `cli.py`、`core/manager.py`、`core/runtime.py`、`core/database.py`、`pyproject.toml` 及使用/架构文档。无新增依赖。运行环境中已更新可编辑安装的 `mcp-manager-gateway` 入口。
+
+接口为 search_tools(query,server,offset,limit)、get_tool_details(tool_id)、call_tool(tool_id,arguments,schema_hash)。授权冻结后端启动配置、状态代次及工具白名单；搜索只读缓存，选中后端后持久会话；调用检查最新Schema，保留原错误和 execute 预览语义；大结果写入私有文件。无无限制 Shell、代码生成或工程判断。原配置变更、禁用再启用均需重新本地审批；凭据轮换不暴露旧会话值。
+
+最终完整回归 **105通过、1跳过、0失败**，新增代理17项测试，覆盖真实 stdio 与 HTTP、三工具发现、调用复用、无授权拒绝、Schema变化/参数错误、撤销、凭据脱敏、超时无写入重试、结果文件及有界搜索。唯一跳过为现有 bwrap OS隔离不可用测试。审查发现的授权复活、巨长工具名/搜索输出、会话凭据轮换问题已修复并复核。
+
+真实 DSH Cordis/ToolRuntime/MCP 插件发现3个入口，搜索→详情→真实 Abaqus 元数据及 execute=false 几何预览通过。DSH 工具定义从178128字节降到1565字节，约减少99.12%；不是精确 tokenizer 计数或全部上下文缩减比例。后端保留107个工具。四个现有预设只替换原 Abaqus 连接，用户patch及数据库已备份，比较保留其他配置；通过 DSH 官方函数重建生成根文件。旧对话可能仍保存原工具，需新建对话。
+
+证据在 runtime/gateway/{regression.log,dsh-acceptance.json,dsh-deployment.json}。本轮未执行原生 Abaqus 建模/求解，未触及用户模型；Windows原生运行与GUI代理策略编辑页未实现/未验收。后续可添加GUI策略编辑和目标模型tokenizer实测，继续按需发现而非自动加载全部目录。

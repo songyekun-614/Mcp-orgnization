@@ -13,6 +13,9 @@ def main(argv=None):
     for name in ('detect','list','dashboard','clients','tasks','export'):commands.add_parser(name)
     scan=commands.add_parser('discover');scan.add_argument('roots',nargs='*');scan.add_argument('--mode',choices=['quick','standard'],default='quick')
     serve=commands.add_parser('serve');serve.add_argument('--data-dir',dest='serve_data_dir');serve.add_argument('--transport',choices=['stdio','streamable-http'],default='stdio');serve.add_argument('--host',default='127.0.0.1');serve.add_argument('--port',type=int,default=8791)
+    gateway=commands.add_parser('gateway');gateway.add_argument('--data-dir',dest='gateway_data_dir')
+    policy=commands.add_parser('plan-gateway');policy.add_argument('server_ids',nargs='+');policy.add_argument('--allowlist');policy.add_argument('--result-limit',type=int,default=8192);policy.add_argument('--call-timeout',type=int,default=240)
+    commands.add_parser('gateway-policy')
     gui=commands.add_parser('gui');gui.add_argument('--data-dir',dest='gui_data_dir')
     register=commands.add_parser('register');register.add_argument('spec_file')
     connect=commands.add_parser('plan-connect');connect.add_argument('server_id');connect.add_argument('--tool');connect.add_argument('--arguments',default='{}')
@@ -25,12 +28,15 @@ def main(argv=None):
     backup=commands.add_parser('backup-db');backup.add_argument('destination')
     restore=commands.add_parser('plan-restore-db');restore.add_argument('backup')
     args=parser.parse_args(argv)
-    data_dir=getattr(args,'serve_data_dir',None) or getattr(args,'gui_data_dir',None) or args.data_dir
+    data_dir=getattr(args,'serve_data_dir',None) or getattr(args,'gateway_data_dir',None) or getattr(args,'gui_data_dir',None) or args.data_dir
     if args.command=='gui':
         from .gui.app import main as gui_main
         return gui_main(['--data-dir',data_dir] if data_dir else [])
     core=ManagerCore(data_dir)
     try:
+        if args.command=='gateway':
+            from .gateway_server import create_gateway_server
+            create_gateway_server(core).run(transport='stdio');return 0
         if args.command=='serve':
             if args.host not in ('127.0.0.1','localhost','::1'):raise PermissionError('HTTP management is loopback-only; use an authenticated external transport for remote access')
             from .server import create_server
@@ -42,6 +48,8 @@ def main(argv=None):
         elif args.command=='clients':result=core.list_clients()
         elif args.command=='tasks':result=core.list_tasks()
         elif args.command=='discover':result=core.discover(args.roots,args.mode)
+        elif args.command=='gateway-policy':result=core.db.get_setting('gateway_policy',{'backends':[]})
+        elif args.command=='plan-gateway':result=core.plan_gateway(args.server_ids,tool_allowlist=json.loads(Path(args.allowlist).read_text()) if args.allowlist else None,result_limit_bytes=args.result_limit,call_timeout=args.call_timeout)
         elif args.command=='register':result=core.register_server(json.loads(Path(args.spec_file).read_text()))
         elif args.command=='plan-connect':result=core.plan_connection(args.server_id,args.tool,json.loads(args.arguments))
         elif args.command=='plan-install':result=core.plan_install(json.loads(Path(args.request_file).read_text()))

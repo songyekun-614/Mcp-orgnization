@@ -18,6 +18,7 @@ dev = ["pytest>=8,<10", "build>=1,<2"]
 mcp-manager = "mcp_manager.cli:main"
 mcp-manager-gui = "mcp_manager.gui.app:main"
 mcp-manager-server = "mcp_manager.server:main"
+mcp-manager-gateway = "mcp_manager.gateway_server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

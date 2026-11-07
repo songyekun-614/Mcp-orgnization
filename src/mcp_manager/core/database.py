@@ -6,6 +6,7 @@ from pathlib import Path
 import sqlite3
 from uuid import uuid4
 from .security import redact,safe_spec,digest_payload
+from ..models import ServerSpec
 
 
 class Database:
@@ -50,9 +51,11 @@ class Database:
         with self.connect() as c:
             c.execute('BEGIN IMMEDIATE');row=c.execute('SELECT data FROM servers WHERE id=?',(server_id,)).fetchone()
             if not row:raise KeyError('Unknown MCP ID')
-            record=json.loads(row[0]);record.update(redact(fields));record['updated_at']=datetime.now(timezone.utc).isoformat()
+            record=json.loads(row[0]);old_spec=record['spec'];old_enabled=record['enabled'];generation=record.get('gateway_generation',0)
+            record.update(redact(fields));record['gateway_generation']=generation;record['updated_at']=datetime.now(timezone.utc).isoformat()
+            if ('spec' in fields and safe_spec(ServerSpec.model_validate(fields['spec']))!=old_spec) or record['enabled']!=old_enabled:
+                record['gateway_generation']=generation+1
             if 'spec' in fields:
-                from ..models import ServerSpec
                 model=ServerSpec.model_validate(fields['spec']);record['spec']=safe_spec(model)
                 c.execute('UPDATE servers SET data=?, identity=? WHERE id=?',(json.dumps(record,ensure_ascii=False),model.identity(),server_id))
             else:c.execute('UPDATE servers SET data=? WHERE id=?',(json.dumps(record,ensure_ascii=False),server_id))

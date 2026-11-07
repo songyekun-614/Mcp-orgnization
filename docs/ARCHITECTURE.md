@@ -30,3 +30,7 @@ GUI 与管理型 MCP 均调用 `ManagerCore`。GUI 使用 QThreadPool/信号；M
 扩展测试与正式运行是两个权限阶段：测试必须进入真实 OS 隔离，未具备软件原生适配器的级别记 not_run；正式 Generic Host 加载的是已审批受信任代码，其 Python 进程不是生产沙箱。没有通过静态检查即可任意写工业工程文件的接口。Abaqus 发布门槛保留真实 native 证据，本阶段不放宽。
 
 当前仅 schema_version/user_version=1，有拒绝未来版本及备份恢复校验；尚无第二个数据库版本可执行升级迁移。Windows 适配代码与 CI 定义不构成 Windows 原生验证结果。
+
+## 轻量工具代理
+
+`gateway_server.py` 是与管理型服务分开的 stdio 前端，只注册3个入口。`core/gateway.py` 负责本地审批策略、缓存搜索、Schema 校验和有界结果；`core/gateway_connection.py` 的单任务持有后端 SDK 会话并串行转发，复用原 Runtime transport/凭据适配。数据库的每服务单调 gateway_generation 使状态变更永久撤销旧授权，现有 JSON 记录惰性默认0，无 SQLite 表迁移。CLI 的 plan-gateway/approve/execute 配置策略，协议不提供自授权入口。详情见 [LIGHTWEIGHT_GATEWAY.md](LIGHTWEIGHT_GATEWAY.md)。

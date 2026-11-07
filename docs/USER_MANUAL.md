@@ -54,3 +54,7 @@ Generic 扩展发布返回独立 Host 的启动建议，注册该启动配置后
 `mcp-manager export` 输出不含秘密的模板，绝对路径成为待重新定位项。导入仅检验目标环境并生成匹配/安装建议，不跨系统替换斜杠或直接安装。
 
 `mcp-manager backup-db /path/to/backup.sqlite` 备份注册数据库；通过 plan-restore-db 生成恢复计划。先停止管理器任务和持有连接再恢复。Monitoring 和 Installation Center 显示实际状态及脱敏错误，无许可证、程序不存在、依赖缺失和协议握手失败应分别处理，不将进程启动当作工具调用成功。
+
+## 小上下文模型
+
+建议使用独立三入口轻量代理，配置、审批、调用及 DSH 换接流程见 [LIGHTWEIGHT_GATEWAY.md](LIGHTWEIGHT_GATEWAY.md)。原管理型服务继续提供管理功能；不要在同一工程会话重复连接代理及原107工具直连。已打开的旧会话需要新建对话刷新。

@@ -28,7 +28,7 @@ class RuntimeManager:
         command=Path(spec.command or '').name.lower()
         if command in ('npx','npx.cmd','uvx','uvx.exe') and not any(x in spec.args for x in ('--no-install','--offline')):
             raise PermissionError('Connection probes cannot implicitly download code; install a pinned package first')
-        if 'mcp-manager-server' in command or any('mcp_manager'==x for x in spec.args) and any(x in spec.args for x in ('serve','server')):
+        if command.startswith(('mcp-manager-server','mcp-manager-gateway')) or command.removesuffix('.exe').removesuffix('.cmd')=='mcp-manager' and any(x in spec.args for x in ('serve','gateway')) or 'mcp_manager.gateway_server' in spec.args or 'mcp_manager' in spec.args and any(x in spec.args for x in ('serve','server','gateway')):
             raise PermissionError('Manager cannot connect recursively to itself')
         if spec.url and spec.url.rstrip('/')==self.environ.get('MCP_MANAGER_ENDPOINT','').rstrip('/'):
             raise PermissionError('Manager cannot connect recursively to its own HTTP endpoint')
@@ -44,14 +44,14 @@ class RuntimeManager:
             values[name]=value
         return values
     @asynccontextmanager
-    async def _session(self,spec,errlog,timeout):
+    async def _session(self,spec,errlog,timeout,credentials=None):
         if spec.transport=='stdio':
-            env={k:v for k,v in self.environ.items() if k in AMBIENT};env.update(spec.env);env.update(self._credentials(spec.env_refs))
+            env={k:v for k,v in self.environ.items() if k in AMBIENT};env.update(spec.env);env.update(credentials[0] if credentials is not None else self._credentials(spec.env_refs))
             parameters=StdioServerParameters(command=spec.command,args=spec.args,cwd=spec.cwd,env=env)
             async with stdio_client(parameters,errlog=errlog) as (read,write):
                 async with ClientSession(read,write,read_timeout_seconds=timedelta(seconds=timeout)) as session:yield session
         else:
-            headers=self._credentials(spec.headers_refs)
+            headers=dict(credentials[1] if credentials is not None else self._credentials(spec.headers_refs))
             if 'Authorization' in headers and not headers['Authorization'].lower().startswith(('bearer ','basic ')):headers['Authorization']='Bearer '+headers['Authorization']
             async with httpx.AsyncClient(headers=headers,timeout=timeout,follow_redirects=False,trust_env=False) as client:
                 async with streamable_http_client(spec.url,http_client=client) as (read,write,_):
@@ -93,8 +93,8 @@ class RuntimeManager:
     def _record(self,spec):
         return dict(id=uuid4().hex,name=spec.name,status='running',level='launch_config_read',tools=[],tool_count=0,
             facts=dict(process_started=False,transport_connected=False,handshake_completed=False,tools_discovered=False,tool_call_tested=False),started_at=datetime.now(timezone.utc).isoformat(),connection_closed=False)
-    def _sanitize(self,value,spec):
-        secrets=self._credentials_if_available(spec)
+    def _sanitize(self,value,spec,extra_secrets=()):
+        secrets=[*extra_secrets,*self._credentials_if_available(spec)]
         def walk(item):
             if isinstance(item,str):
                 for secret in secrets:
@@ -105,10 +105,10 @@ class RuntimeManager:
             return item
         return redact(walk(value))
 
-    def _clean(self,text,spec):
+    def _clean(self,text,spec,extra_secrets=()):
         for value in list(spec.env.values()):
             if len(value)>=6:text=text.replace(value,'<environment-value>')
-        for value in self._credentials_if_available(spec):
+        for value in [*extra_secrets,*self._credentials_if_available(spec)]:
             if value:text=text.replace(value,'<redacted>')
         return redact(text)
     def _credentials_if_available(self,spec):

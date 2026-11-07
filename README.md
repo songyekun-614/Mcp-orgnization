@@ -25,13 +25,17 @@ mcp-manager search filesystem --offline
 mcp-manager serve
 ```
 
-`--data-dir /path/to/data` 必须放在 CLI 子命令之前（serve/gui 也接受子命令之后）。默认数据目录由 XDG 或 Windows LOCALAPPDATA 决定，不绑定开发电脑路径。
+`--data-dir /path/to/data` 必须放在 CLI 子命令之前（serve/gui/gateway 也接受子命令之后）。默认数据目录由 XDG 或 Windows LOCALAPPDATA 决定，不绑定开发电脑路径。
 
 ## 连接 Agent
 
 客户端启动命令：该环境内的 `mcp-manager-server`，无参数即 stdio。也可使用该环境 Python 加参数 `-m mcp_manager serve`。设置完整可执行文件路径，避免客户端使用错误的 Python。
 
 管理型 MCP 默认拒绝 Agent 执行变更；Agent 可以查询和提交计划。本地 GUI/CLI 审查确切命令、来源、版本、目录及权限后批准。若希望 Agent 执行已批准的计划，在本地设置 `mcp-manager permissions approved_only`。没有协议级自授权工具。stdio 通常由客户端按需启动；GUI 的持有连接属于额外的显式操作。
+
+## 小上下文模型
+
+连接 `mcp-manager-gateway` 可只向模型暴露搜索、单工具详情和调用三个入口，后端完整目录留在主机。需先本地批准后端与工具白名单，再将客户端原直连替换为代理。真实 DSH/Abaqus 验收从107个工具降到3个，定义 JSON 从178128字节降到1565字节。详见[轻量代理使用说明](docs/LIGHTWEIGHT_GATEWAY.md)。
 
 ## 文档与验收
 
