@@ -172,3 +172,37 @@ def test_update_collects_target_version_before_core_plan(app, monkeypatch):
     wait_until(app, lambda: bool(plans) and not window._jobs)
     assert plans[0][2]['request']['version'] == '2.0.0'
     window.close()
+
+
+def test_registry_search_result_can_prefill_install_form(app):
+    from mcp_manager.gui.app import MainWindow
+    class RegistryCore(ReadOnlyCore):
+        def search_registry(self, query):
+            return {'servers': [{'server': {'name': 'io.example/demo', 'version': '0.4.0',
+                                            'packages': [{'registryType': 'pypi', 'identifier': 'demo-mcp', 'version': '0.4.0'}]}}]}
+    window = MainWindow(RegistryCore())
+    window.registry_query.setText('demo')
+    window.search_registry()
+    wait_until(app, lambda: window.registry_list.count() == 1 and not window._jobs)
+    window._prefill_install('python', {'identifier': 'demo-mcp', 'version': '0.4.0'}, {'name': 'io.example/demo'})
+    assert window.navigation.currentRow() == 3
+    assert window.install_kind.currentText() == 'python'
+    assert window.install_package.text() == 'demo-mcp'
+    assert window.install_version.text() == '0.4.0'
+    assert window.install_name.text() == 'demo'
+    window.close()
+
+
+def test_client_row_click_populates_change_form_and_responsive_sidebar(app):
+    from mcp_manager.gui.app import MainWindow
+    class ClientCore(ReadOnlyCore):
+        def list_clients(self):
+            return {'clients': [{'client': 'codex', 'path': '/tmp/config.toml', 'exists': True, 'servers': []}]}
+    window = MainWindow(ClientCore())
+    window.clients_table.selectRow(0)
+    assert window.client_name.text() == 'codex'
+    assert window.client_path.text() == '/tmp/config.toml'
+    window.resize(880, 640)
+    window._apply_responsive(880)
+    assert window.sidebar.width() == 72
+    window.close()
