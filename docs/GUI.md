@@ -8,7 +8,15 @@ QT_QPA_PLATFORM=offscreen PYTHONPATH=src /path/to/venv/bin/python -m mcp_manager
 
 `--data-dir` 应用于临时验收数据库，截图启动不扫描、不连接服务、不修改客户端。`--screenshot` 会截图并退出，`--smoke-test` 仅启动并退出。窗口最低 880×640，可自由调整，Qt 自动处理 DPI；主题支持浅色与深色。
 
-八页：总览、已安装服务、发现服务、安装中心、客户端、扩展中心、监控与日志、设置。指标来自 `dashboard()`，服务与工具来自 `list_servers()`，客户端和日志展示 Core 提供的脱敏结果。底部记录运行状态和错误，无模拟成功路径。
+八页：总览、已安装服务、发现服务、安装中心、客户端、扩展中心、监控与日志、设置。指标来自 `dashboard()`，服务与工具来自 `list_servers()`，客户端和日志展示 Core 提供的脱敏结果。底部集成可折叠的活动日志抽屉，并在操作失败或不支持时自动展开。
+
+## 模块结构
+
+- `app.py`：主窗口 `MainWindow`、页面编排、工作线程与 Core 接口调度。
+- `icons.py`：纯矢量 SVG 图标集（Lucide 规范），在运行时由 `QSvgRenderer` 随主题色动态渲染，无需外部图标资源文件。
+- `theme.py`：统一的浅色 / 深色设计令牌字典与集中式 QSS 样式表。
+- `widgets.py`：无状态展示型组件：`Card`（带标题、提示与操作插槽的圆角卡片）、`Segmented`（与底阶 `QComboBox` 双向同步的分段控制器）、`EmptyState`（空状态占位）、`pill`（语义胶囊徽章）与 `field`（垂直表单项）。
+- 响应式自适应：当窗口宽度小于 1060px 时，左侧导航栏自动折叠为图标侧栏并保留悬浮提示；服务表格自适应隐藏次要列以适配 880×640 最低分辨率。
 
 ## Core 依赖
 
